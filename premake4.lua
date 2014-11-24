@@ -27,7 +27,18 @@ solution 'lua-mysql'
             'NOMINMAX',
         }
 
-    project 'lua-mysql'
+    project 'lua'
+        language 'C'
+        kind 'ConsoleApp'
+        location 'build'
+        uuid '9C08AC41-18D8-4FB9-80F2-01F603917025'
+        files
+        {
+            'dep/lua/src/lua.c',
+        }
+        links 'lua52'
+        
+    project 'luamysql'
         language 'C'
         kind 'SharedLib'
         location 'build'
@@ -42,7 +53,12 @@ solution 'lua-mysql'
             'dep/libmysql',
             'dep/lua/src',
         }
-        links 'lua52'
+        libdirs 'bin'
+        links 
+        {
+            'libmysql',
+            'lua52',
+        }
 
     project 'lua52'
         language 'C'
@@ -59,4 +75,4 @@ solution 'lua-mysql'
         {
             'dep/lua/src/lua.c',
             'dep/lua/src/luac.c',
-        }         
+        }  
