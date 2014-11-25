@@ -433,9 +433,26 @@ static void make_meta(lua_State* L, const char* name, const luaL_Reg* metalib)
     }
 }
 
-static void create_metatables(lua_State* L)
+static void create_meta_cursor(lua_State* L)
 {
-    static const luaL_Reg conn_methods[] =
+    static const luaL_Reg metalib[] =
+    {
+        { "__gc", cursor_gc },
+        { "fetch", cursor_fetch },
+        { "fetch_all", cursor_fetch_all },
+        { "numrows", cursor_numrows },
+        { NULL, NULL },
+    };
+    luaL_newmetatable(L, LUAMYSQL_CURSOR);
+    lua_pushvalue(L, -1);
+    lua_setfield(L, -2, "__index");
+    luaL_setfuncs(L, metalib, 0);
+    lua_pop(L, 1);
+}
+
+static void create_meta_conn(lua_State* L)
+{
+    static const luaL_Reg metalib[] =
     {
         { "__gc", conn_gc },
         { "__tostring", conn_tostring },
@@ -451,27 +468,23 @@ static void create_metatables(lua_State* L)
         { "rollback", conn_rollback },
         { NULL, NULL },
     };
-    static const luaL_Reg cur_methods[] =
-    { 
-        { "__gc", cursor_gc },
-        { "fetch", cursor_fetch },
-        { "fetch_all", cursor_fetch_all },
-        { "numrows", cursor_numrows },
-        { NULL, NULL },
-    };
-    make_meta(L, LUAMYSQL_CONN, conn_methods);
-    make_meta(L, LUAMYSQL_CURSOR, cur_methods);
-    lua_pop(L, 1);  /* pop new metatable */
+    luaL_newmetatable(L, LUAMYSQL_CONN);
+    lua_pushvalue(L, -1);
+    lua_setfield(L, -2, "__index");
+    luaL_setfuncs(L, metalib, 0);
+    lua_pop(L, 1);
 }
 
-LUAMYSQL_EXPORT int luaopen_luamysql(lua_State* L)
+LUAMYSQL_EXPORT 
+int luaopen_luamysql(lua_State* L)
 {
     static const luaL_Reg lib[] =
     {
-        { "create", conn_create },
+        { "newclient", conn_create },
         { NULL, NULL },
     };
-    create_metatables(L);
+    create_meta_conn(L);
+    create_meta_cursor(L);
     luaL_newlib(L, lib);
     lua_pushliteral(L, "_VERSION");
     lua_pushstring(L, mysql_get_client_info());
