@@ -131,7 +131,7 @@ static void pushvalue(lua_State* L, enum enum_field_types type,
     }
 }
 
-static void result_to_table(lua_State* L, Cursor* cur, MYSQL_ROW row, 
+static void result_to_table(lua_State* L, Cursor* cur, MYSQL_ROW row,
                             unsigned long* lengths, int alpha_idx)
 {
     assert(L && cur && lengths);
@@ -188,7 +188,7 @@ static int cursor_fetch_all(lua_State* L)
     Cursor* cur = check_cursor(L);
     luaL_argcheck(L, cur && cur->my_res, 1, "invalid Cursor object");
     luaL_argcheck(L, cur->fetch_all, 1, "not compatible with execute()");
-    
+
     int alpha_idx = 0;
     const char* opt = lua_tostring(L, 2);
     if (opt && strcmp(opt, "a") == 0) // alphabetic table index
@@ -299,7 +299,7 @@ static int conn_execute(lua_State* L)
     size_t length = 0;
     const char* stmt = luaL_checklstring(L, 2, &length);
     const char* fetch_opt = lua_tostring(L, 3);
-    int fetch_all = 1; 
+    int fetch_all = 1;
     if (fetch_opt)
     {
         if (strcmp(fetch_opt, "store") == 0)
@@ -411,6 +411,29 @@ static int conn_set_timeout(lua_State* L)
     return 0;
 }
 
+static int conn_set_compress(lua_State* L)
+{
+    Connection* conn = check_conn(L);
+    luaL_argcheck(L, conn && !conn->closed, 1, "invalid Connection object");
+    if (mysql_options(&conn->my_conn, MYSQL_OPT_COMPRESS, NULL) != 0)
+    {
+        luamysql_throw_error(L, &conn->my_conn, "set_compress() failed");
+    }
+    return 0;
+}
+
+static int conn_set_protocol(lua_State* L)
+{
+    Connection* conn = check_conn(L);
+    luaL_argcheck(L, conn && !conn->closed, 1, "invalid Connection object");
+    unsigned int protocol = (unsigned int)luaL_checkint(L, 2);
+    if (mysql_options(&conn->my_conn, MYSQL_OPT_PROTOCOL, &protocol) != 0)
+    {
+        luamysql_throw_error(L, &conn->my_conn, "set_compress() failed");
+    }
+    return 0;
+}
+
 static int conn_ping(lua_State* L)
 {
     Connection* conn = check_conn(L);
@@ -432,7 +455,7 @@ static int conn_escape_string(lua_State* L)
     char* dest = (char*)malloc(length * 2 + 1);
     if (dest)
     {
-        unsigned long newlen = mysql_real_escape_string(&conn->my_conn, dest, 
+        unsigned long newlen = mysql_real_escape_string(&conn->my_conn, dest,
             stmt, (unsigned long)length);
         lua_pushlstring(L, dest, newlen);
         free(dest);
@@ -443,6 +466,42 @@ static int conn_escape_string(lua_State* L)
 
 
 //////////////////////////////////////////////////////////////////////////
+
+#define push_literal(L, name, value)\
+    lua_pushstring(L, name);        \
+    lua_pushnumber(L, value);       \
+    lua_rawset(L, -3);
+
+
+static void push_mysql_constant(lua_State* L)
+{
+    // protocol type
+    push_literal(L, "PROTOCOL_DEFAULT", MYSQL_PROTOCOL_DEFAULT);
+    push_literal(L, "PROTOCOL_TCP", MYSQL_PROTOCOL_TCP);
+    push_literal(L, "PROTOCOL_SOCKET", MYSQL_PROTOCOL_SOCKET);
+    push_literal(L, "PROTOCOL_PIPE", MYSQL_PROTOCOL_PIPE);
+    push_literal(L, "PROTOCOL_MEMORY", MYSQL_PROTOCOL_MEMORY);
+
+    // client flag
+    push_literal(L, "CLIENT_LONG_PASSWORD", CLIENT_LONG_PASSWORD);
+    push_literal(L, "CLIENT_FOUND_ROWS", CLIENT_FOUND_ROWS);
+    push_literal(L, "CLIENT_LONG_FLAG", CLIENT_LONG_FLAG);
+    push_literal(L, "CLIENT_CONNECT_WITH_DB", CLIENT_CONNECT_WITH_DB);
+    push_literal(L, "CLIENT_NO_SCHEMA", CLIENT_NO_SCHEMA);
+    push_literal(L, "CLIENT_COMPRESS", CLIENT_COMPRESS);
+    push_literal(L, "CLIENT_ODBC", CLIENT_ODBC);
+    push_literal(L, "CLIENT_LOCAL_FILES", CLIENT_LOCAL_FILES);
+    push_literal(L, "CLIENT_IGNORE_SPACE", CLIENT_IGNORE_SPACE);
+    push_literal(L, "CLIENT_PROTOCOL_41", CLIENT_PROTOCOL_41);
+    push_literal(L, "CLIENT_INTERACTIVE", CLIENT_INTERACTIVE);
+    push_literal(L, "CLIENT_SSL", CLIENT_SSL);
+    push_literal(L, "CLIENT_IGNORE_SIGPIPE", CLIENT_IGNORE_SIGPIPE);
+    push_literal(L, "CLIENT_TRANSACTIONS", CLIENT_TRANSACTIONS);
+    push_literal(L, "CLIENT_SECURE_CONNECTION", CLIENT_SECURE_CONNECTION);
+    push_literal(L, "CLIENT_MULTI_STATEMENTS", CLIENT_MULTI_STATEMENTS);
+    push_literal(L, "CLIENT_MULTI_RESULTS", CLIENT_MULTI_RESULTS);
+    push_literal(L, "CLIENT_PS_MULTI_RESULTS", CLIENT_PS_MULTI_RESULTS);
+}
 
 static void create_metatable(lua_State* L, const char* name, const luaL_Reg* methods)
 {
@@ -472,6 +531,8 @@ static void make_mysql_meta(lua_State* L)
         { "set_charset", conn_set_charset },
         { "set_reconnect", conn_set_reconnect },
         { "set_timeout", conn_set_timeout },
+        { "set_protocol", conn_set_protocol },
+        { "set_compress", conn_set_compress },
         { "escape", conn_escape_string },
         { "connect", conn_connect },
         { "ping", conn_ping },
@@ -505,6 +566,7 @@ LUAMYSQL_EXPORT int luaopen_luamysql(lua_State* L)
     luaL_checkversion(L);
     make_mysql_meta(L);
     luaL_newlib(L, lib);
+    push_mysql_constant(L);
     lua_pushliteral(L, "_VERSION");
     lua_pushstring(L, mysql_get_client_info());
     lua_settable(L, -3);
