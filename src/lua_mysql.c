@@ -10,6 +10,9 @@
 # define LUAMYSQL_EXPORT
 #endif
 
+#include <stdlib.h>
+#include <string.h>
+#include <malloc.h>
 #include <assert.h>
 #include <mysql.h>
 #include <lua.h>
