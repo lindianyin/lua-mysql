@@ -2,8 +2,7 @@
 -- Premake4 build script (http://industriousone.com/premake/download)
 --
 
-local this_os = os.get()
-assert(this_os == 'windows' or this_os == 'linux')
+assert(os.get() == 'windows' or os.get() == 'linux')
 
 solution 'lua-mysql'
     configurations {'Debug', 'Release'}
@@ -60,6 +59,7 @@ solution 'lua-mysql'
         links 'mysqlclient'
         end
 
+    -- sudo apt-get install lua5.2 liblua5.2-dev
     if os.get() == 'linux' then return end
 
     project 'lua'
@@ -71,7 +71,7 @@ solution 'lua-mysql'
         {
             'dep/lua/src/lua.c',
         }
-        links 'lua52'
+        links 'lua5.2'
         
     project 'lua5.2'
         language 'C'
