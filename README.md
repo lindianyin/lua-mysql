@@ -5,8 +5,16 @@ simple(but not complete) Lua 5.2 binding of MySQL 5.5 C API
 
 ## Installation
 
+### Build on Windows 7 x64
+
 1. Obtain [premake4](http://industriousone.com/premake/download).
-2. `premake4 gmake` on Linux or `premake4 vs2013` on Windows.
+2. Type `premake4 vs2013` on CMD window to generate MSVC solution files.
+
+### Build on Ubuntu 14.04 64-bit
+
+1. Obtain [premake4](http://industriousone.com/premake/download).
+2. Type `sudo apt-get install libmysqlclient-dev lua5.2 liblua5.2-dev`
+3. Type `premake4 gmake && make config=release64`
 
 
 ## Usage at a glance
