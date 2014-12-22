@@ -41,6 +41,9 @@ solution 'lua-mysql'
         kind 'SharedLib'
         location 'build'
         uuid 'A75AF625-DDF0-4E60-97D8-A2FDC6229AF7'
+        if os.get() == 'windows' then
+        defines 'inline=__inline'
+        end        
         files
         {
             'src/*.h',
