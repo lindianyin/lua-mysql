@@ -5,10 +5,18 @@
 #ifdef _WIN32
 # include <WinSock2.h>
 # define LUAMYSQL_EXPORT    __declspec(dllexport)
-# define inline             __inline
 #else
-# define LUAMYSQL_EXPORT
+# define LUAMYSQL_EXPORT    extern
 #endif
+
+#if defined(__GNUC__) && __GNUC__ >= 4
+# define LIKELY(x)   (__builtin_expect((x), 1))
+# define UNLIKELY(x) (__builtin_expect((x), 0))
+#else
+# define LIKELY(x)   (x)
+# define UNLIKELY(x) (x)
+#endif
+
 
 #include <stdlib.h>
 #include <string.h>
@@ -230,7 +238,7 @@ static int conn_create(lua_State* L)
 {
     Connection* conn = (Connection*)lua_newuserdata(L, sizeof(Connection));
     conn->closed = 0;
-    if (mysql_init(&conn->my_conn) == &conn->my_conn)
+    if (LIKELY(mysql_init(&conn->my_conn) == &conn->my_conn))
     {
         luaL_getmetatable(L, LUAMYSQL_CONN);
         lua_setmetatable(L, -2);
@@ -312,7 +320,8 @@ static int conn_execute(lua_State* L)
     }
 
     MYSQL* my_conn = &conn->my_conn;
-    if (mysql_real_query(my_conn, stmt, (unsigned long)length) != 0)
+    int err = mysql_real_query(my_conn, stmt, (unsigned long)length);
+    if (UNLIKELY(err != 0))
     {
         return luamysql_throw_error(L, my_conn, "execute() failed");
     }
@@ -456,15 +465,15 @@ static int conn_escape_string(lua_State* L)
     size_t length = 0;
     const char* stmt = luaL_checklstring(L, 2, &length);
     char* dest = (char*)malloc(length * 2 + 1);
-    if (dest)
+    if (UNLIKELY(dest == NULL))
     {
-        unsigned long newlen = mysql_real_escape_string(&conn->my_conn, dest,
-            stmt, (unsigned long)length);
-        lua_pushlstring(L, dest, newlen);
-        free(dest);
-        return 1;
+        return luaL_error(L, "malloc() failed.");
     }
-    return luaL_error(L, "malloc() failed.");
+    unsigned long newlen = mysql_real_escape_string(&conn->my_conn, dest,
+        stmt, (unsigned long)length);
+    lua_pushlstring(L, dest, newlen);
+    free(dest);
+    return 1;
 }
 
 
