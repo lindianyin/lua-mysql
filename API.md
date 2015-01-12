@@ -14,6 +14,7 @@ return a string of client library version info.
 ### conn:connect(config)
 
 config is a table contains:
+
 ------------|-------------------
    host     | a host name or an IP address
    user     | user's MySQL login ID
@@ -41,6 +42,7 @@ Enable or disable automatic reconnection to the server if the connection is foun
 ### conn:set_timeout(how, timeout)
 
 `how` can be one of following:
+
 ----------|--------------------------------
   connect | Connect timeout in seconds
     read  | The timeout in seconds for each attempt to read from the server
@@ -75,6 +77,7 @@ See [mysql_ping](http://dev.mysql.com/doc/refman/5.5/en/mysql-ping.html)
 ### conn:execute(opt)
 
 Executes the SQL statement, opt can be one of following:
+
 -----------|-----------------------------------
   `store`  | retrieve the entire result set all at once, this is the default behavior
   `use`    | initiate a row-by-row result set retrieval
@@ -100,6 +103,7 @@ See [mysql_rollback](http://dev.mysql.com/doc/refman/5.5/en/mysql-rollback.html)
 
 Fetch result row-by-row, and return a table.
 `opt` can be one of the following:
+
 ---------|--------------------------------
     'n'  | numeric table index, as default
     'a'  | alphabetic table index
@@ -108,6 +112,7 @@ Fetch result row-by-row, and return a table.
 
 Fetch all result in a table.
 `opt` can be one of the following:
+
 ---------|--------------------------------
     'n'  | numeric table index, as default
     'a'  | alphabetic table index
