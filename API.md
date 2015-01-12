@@ -15,12 +15,13 @@ return a string of client library version info.
 
 config is a table contains:
 
+config key  |  description
 ------------|-------------------
-   host     | a host name or an IP address
-   user     | user's MySQL login ID
-  passwd    | password for user
-    db      | database name
-   port     | port number of TCP/IP connection
+host        | a host name or an IP address
+user        | user's MySQL login ID
+passwd      | password for user
+db          | database name
+port        | port number of TCP/IP connection
 unix_socket | socket or named pipe to use
 client_flag | feature flags
 
@@ -43,10 +44,11 @@ Enable or disable automatic reconnection to the server if the connection is foun
 
 `how` can be one of following:
 
-----------|--------------------------------
-  connect | Connect timeout in seconds
-    read  | The timeout in seconds for each attempt to read from the server
-    write | The timeout in seconds for each attempt to write to the server.
+how       |  description
+----------|------------------
+connect   | Connect timeout in seconds
+read      | The timeout in seconds for each attempt to read from the server
+write     | The timeout in seconds for each attempt to write to the server.
 
 ### conn:set_protocol(protocol)
 
@@ -78,9 +80,10 @@ See [mysql_ping](http://dev.mysql.com/doc/refman/5.5/en/mysql-ping.html)
 
 Executes the SQL statement, opt can be one of following:
 
------------|-----------------------------------
-  `store`  | retrieve the entire result set all at once, this is the default behavior
-  `use`    | initiate a row-by-row result set retrieval
+opt    |  description
+-------|-----------------
+store  | retrieve the entire result set all at once, this is the default behavior
+use    | initiate a row-by-row result set retrieval
 
 return a `Cursor` object when succeeded.
 
@@ -104,17 +107,19 @@ See [mysql_rollback](http://dev.mysql.com/doc/refman/5.5/en/mysql-rollback.html)
 Fetch result row-by-row, and return a table.
 `opt` can be one of the following:
 
----------|--------------------------------
-    'n'  | numeric table index, as default
-    'a'  | alphabetic table index
+opt  |  description
+-----|--------------------------------
+'n'  | numeric table index, as default
+'a'  | alphabetic table index
     
 ### cursor:fetch_all(opt)
 
 Fetch all result in a table.
 `opt` can be one of the following:
 
----------|--------------------------------
-    'n'  | numeric table index, as default
-    'a'  | alphabetic table index
+opt  |  description
+-----|--------------------------------
+'n'  | numeric table index, as default
+'a'  | alphabetic table index
     
 Cannot work with `conn:execute('use')`
