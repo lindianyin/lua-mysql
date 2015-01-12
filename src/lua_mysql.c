@@ -9,15 +9,6 @@
 # define LUAMYSQL_EXPORT    extern
 #endif
 
-#if defined(__GNUC__) && __GNUC__ >= 4
-# define LIKELY(x)   (__builtin_expect((x), 1))
-# define UNLIKELY(x) (__builtin_expect((x), 0))
-#else
-# define LIKELY(x)   (x)
-# define UNLIKELY(x) (x)
-#endif
-
-
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
@@ -238,7 +229,7 @@ static int conn_create(lua_State* L)
 {
     Connection* conn = (Connection*)lua_newuserdata(L, sizeof(Connection));
     conn->closed = 0;
-    if (LIKELY(mysql_init(&conn->my_conn) == &conn->my_conn))
+    if (mysql_init(&conn->my_conn) == &conn->my_conn)
     {
         luaL_getmetatable(L, LUAMYSQL_CONN);
         lua_setmetatable(L, -2);
@@ -259,10 +250,7 @@ static int conn_close(lua_State* L)
     return 0;
 }
 
-static int conn_gc(lua_State* L)
-{
-    return conn_close(L);
-}
+#define conn_gc conn_close
 
 static int conn_tostring(lua_State* L)
 {
@@ -321,7 +309,7 @@ static int conn_execute(lua_State* L)
 
     MYSQL* my_conn = &conn->my_conn;
     int err = mysql_real_query(my_conn, stmt, (unsigned long)length);
-    if (UNLIKELY(err != 0))
+    if (err != 0)
     {
         return luamysql_throw_error(L, my_conn, "execute() failed");
     }
@@ -465,7 +453,7 @@ static int conn_escape_string(lua_State* L)
     size_t length = 0;
     const char* stmt = luaL_checklstring(L, 2, &length);
     char* dest = (char*)malloc(length * 2 + 1);
-    if (UNLIKELY(dest == NULL))
+    if (dest == NULL)
     {
         return luaL_error(L, "malloc() failed.");
     }
