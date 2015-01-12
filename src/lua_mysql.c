@@ -43,11 +43,9 @@ typedef struct _Cursor
 }Cursor;
 
 
-inline int luamysql_throw_error(lua_State* L, MYSQL* conn, const char* msg)
-{
-    assert(L && conn && msg);
-    return luaL_error(L, "%s, %s\n", (msg), mysql_error(conn));
-}
+#define THROW_ERROR(L, conn, msg) \
+    luaL_error((L), "%s, %s\n", (msg), mysql_error((conn)))
+
 
 static int create_cursor(lua_State* L, int conn, MYSQL_RES* result,
                          int numcols, int fetch_all)
@@ -235,7 +233,7 @@ static int conn_create(lua_State* L)
         lua_setmetatable(L, -2);
         return 1;
     }
-    return luamysql_throw_error(L, &conn->my_conn, "create client connection");
+    return THROW_ERROR(L, &conn->my_conn, "create client connection");
 }
 
 static int conn_close(lua_State* L)
@@ -285,7 +283,7 @@ static int conn_connect(lua_State* L)
     if (mysql_real_connect(&conn->my_conn, host, user, passwd, db, port,
             unix_socket, flags) != &conn->my_conn)
     {
-        luamysql_throw_error(L, &conn->my_conn, "connect() failed");
+        THROW_ERROR(L, &conn->my_conn, "connect() failed");
     }
     return 0;
 }
@@ -311,7 +309,7 @@ static int conn_execute(lua_State* L)
     int err = mysql_real_query(my_conn, stmt, (unsigned long)length);
     if (err != 0)
     {
-        return luamysql_throw_error(L, my_conn, "execute() failed");
+        return THROW_ERROR(L, my_conn, "execute() failed");
     }
 
     MYSQL_RES* res = NULL;
@@ -341,7 +339,7 @@ static int conn_commit(lua_State* L)
     luaL_argcheck(L, conn && !conn->closed, 1, "invalid Connection object");
     if (mysql_commit(&conn->my_conn) != 0)
     {
-        luamysql_throw_error(L, &conn->my_conn, "rollback() failed");
+        THROW_ERROR(L, &conn->my_conn, "rollback() failed");
     }
     return 0;
 }
@@ -352,7 +350,7 @@ static int conn_rollback(lua_State* L)
     luaL_argcheck(L, conn && !conn->closed, 1, "invalid Connection object");
     if (mysql_rollback(&conn->my_conn) != 0)
     {
-        luamysql_throw_error(L, &conn->my_conn, "rollback() failed");
+        THROW_ERROR(L, &conn->my_conn, "rollback() failed");
     }
     return 0;
 }
@@ -364,7 +362,7 @@ static int conn_set_charset(lua_State* L)
     const char* charset = luaL_checkstring(L, 2);
     if (mysql_options(&conn->my_conn, MYSQL_SET_CHARSET_NAME, charset) != 0)
     {
-        luamysql_throw_error(L, &conn->my_conn, "set_charset() failed");
+        THROW_ERROR(L, &conn->my_conn, "set_charset() failed");
     }
     return 0;
 }
@@ -376,7 +374,7 @@ static int conn_set_reconnect(lua_State* L)
     my_bool val = (my_bool)lua_toboolean(L, 2);
     if (mysql_options(&conn->my_conn, MYSQL_OPT_RECONNECT, &val) != 0)
     {
-        luamysql_throw_error(L, &conn->my_conn, "set_reconnect() failed");
+        THROW_ERROR(L, &conn->my_conn, "set_reconnect() failed");
     }
     return 0;
 }
@@ -406,7 +404,7 @@ static int conn_set_timeout(lua_State* L)
     }
     if (error != 0)
     {
-        luamysql_throw_error(L, &conn->my_conn, "set_timeout() failed");
+        THROW_ERROR(L, &conn->my_conn, "set_timeout() failed");
     }
     return 0;
 }
@@ -417,7 +415,7 @@ static int conn_set_compress(lua_State* L)
     luaL_argcheck(L, conn && !conn->closed, 1, "invalid Connection object");
     if (mysql_options(&conn->my_conn, MYSQL_OPT_COMPRESS, NULL) != 0)
     {
-        luamysql_throw_error(L, &conn->my_conn, "set_compress() failed");
+        THROW_ERROR(L, &conn->my_conn, "set_compress() failed");
     }
     return 0;
 }
@@ -429,7 +427,7 @@ static int conn_set_protocol(lua_State* L)
     unsigned int protocol = (unsigned int)luaL_checkint(L, 2);
     if (mysql_options(&conn->my_conn, MYSQL_OPT_PROTOCOL, &protocol) != 0)
     {
-        luamysql_throw_error(L, &conn->my_conn, "set_compress() failed");
+        THROW_ERROR(L, &conn->my_conn, "set_compress() failed");
     }
     return 0;
 }
@@ -441,7 +439,7 @@ static int conn_ping(lua_State* L)
     MYSQL* my_conn = &conn->my_conn;
     if (my_conn->methods == NULL || mysql_ping(my_conn) != 0)
     {
-        luamysql_throw_error(L, my_conn, "ping() failed");
+        THROW_ERROR(L, my_conn, "ping() failed");
     }
     return 0;
 }
