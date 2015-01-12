@@ -1,7 +1,7 @@
 lua-mysql
 ===============
 
-lua-mysql is a simple(but not complete) Lua 5.2 binding of MySQL 5.5 C API
+lua-mysql is a simple(but not complete) Lua 5.2 binding of [MySQL 5.5 C API](http://dev.mysql.com/doc/refman/5.5/en/c-api.html)
 
 ## Installation
 
@@ -33,4 +33,4 @@ while true do
 end
 ~~~~~~~~~~
 
-See more [exampes](https://github.com/ichenq/lua-mysql/tree/master/test)
+See more [exampes](https://github.com/ichenq/lua-mysql/tree/master/test) and [API doc](https://github.com/ichenq/lua-mysql/blob/master/API.md)
