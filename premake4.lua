@@ -8,7 +8,7 @@ solution 'lua-mysql'
     configurations {'Debug', 'Release'}
     --flags {'ExtraWarnings'}
     targetdir 'bin'
-    platforms {'x64'}
+    platforms {'x32', 'x64'}
 
     configuration 'Debug'
         defines { 'DEBUG' }
@@ -81,11 +81,7 @@ solution 'lua-mysql'
         kind 'SharedLib'
         location 'build'
         uuid 'C9A112FB-08C0-4503-9AFD-8EBAB5B3C204'
-        if os.get() == 'windows' then
         defines 'LUA_BUILD_AS_DLL'
-        else
-        defines 'LUA_USE_LINUX'
-        end
         files
         {
             'dep/lua/src/*.h',
