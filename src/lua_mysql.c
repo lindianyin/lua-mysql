@@ -273,11 +273,11 @@ static int conn_connect(lua_State* L)
     lua_getfield(L, 2, "db");
     const char* db = luaL_checkstring(L, -1);
     lua_getfield(L, 2, "port");
-    unsigned int port = luaL_optint(L, -1, 3306);
+    unsigned int port = (int)luaL_optinteger(L, -1, 3306);
     lua_getfield(L, 2, "unix_socket");
     const char* unix_socket = luaL_optstring(L, -1, NULL);
     lua_getfield(L, 2, "client_flag");
-    unsigned long flags = luaL_optint(L, -1, 0);
+    unsigned long flags = (int)luaL_optinteger(L, -1, 0);
     lua_pop(L, 7);
 
     if (mysql_real_connect(&conn->my_conn, host, user, passwd, db, port,
@@ -424,7 +424,7 @@ static int conn_set_protocol(lua_State* L)
 {
     Connection* conn = check_conn(L);
     luaL_argcheck(L, conn && !conn->closed, 1, "invalid Connection object");
-    unsigned int protocol = (unsigned int)luaL_checkint(L, 2);
+    unsigned int protocol = (unsigned int)luaL_checkinteger(L, 2);
     if (mysql_options(&conn->my_conn, MYSQL_OPT_PROTOCOL, &protocol) != 0)
     {
         THROW_ERROR(L, &conn->my_conn, "set_compress() failed");
