@@ -116,10 +116,10 @@ static void pushvalue(lua_State* L, enum enum_field_types type,
     case MYSQL_TYPE_SHORT:
     case MYSQL_TYPE_INT24:
     case MYSQL_TYPE_YEAR:
-        lua_pushinteger(L, atoi(row));
-        break;
     case MYSQL_TYPE_LONG:
     case MYSQL_TYPE_LONGLONG:
+        lua_pushinteger(L, atoll(row)); // default integer type in lua 5.3 is long long
+        break;
     case MYSQL_TYPE_DECIMAL:
     case MYSQL_TYPE_FLOAT:
     case MYSQL_TYPE_DOUBLE:
@@ -273,11 +273,11 @@ static int conn_connect(lua_State* L)
     lua_getfield(L, 2, "db");
     const char* db = luaL_checkstring(L, -1);
     lua_getfield(L, 2, "port");
-    unsigned int port = (int)luaL_optinteger(L, -1, 3306);
+    unsigned int port = (unsigned int)luaL_optinteger(L, -1, 3306);
     lua_getfield(L, 2, "unix_socket");
     const char* unix_socket = luaL_optstring(L, -1, NULL);
     lua_getfield(L, 2, "client_flag");
-    unsigned long flags = (int)luaL_optinteger(L, -1, 0);
+    unsigned long flags = (unsigned long)luaL_optinteger(L, -1, 0);
     lua_pop(L, 7);
 
     if (mysql_real_connect(&conn->my_conn, host, user, passwd, db, port,
@@ -467,7 +467,7 @@ static int conn_escape_string(lua_State* L)
 
 #define push_literal(L, name, value)\
     lua_pushstring(L, name);        \
-    lua_pushnumber(L, value);       \
+    lua_pushinteger(L, value);      \
     lua_rawset(L, -3);
 
 
