@@ -96,7 +96,7 @@ static int cursor_numrows(lua_State *L)
     Cursor* cur = check_cursor(L);
     luaL_argcheck(L, cur && cur->my_res, 1, "invalid Cursor object");
     my_ulonglong rows = mysql_num_rows(cur->my_res);
-    lua_pushnumber(L, (lua_Number)rows);
+    lua_pushinteger(L, (lua_Integer)rows);
     return 1;
 }
 
