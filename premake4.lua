@@ -54,10 +54,45 @@ solution 'lua-mysql'
             'dep/libmysql',
             'dep/lua/src',
         }
-        
+        libdirs 'bin'
         links 'lua5.3'
         if os.get() == 'windows' then
         links 'libmysql'
         else
         links 'mysqlclient'
         end
+
+    project 'lua'
+        language 'C'
+        kind 'ConsoleApp'   
+        if os.get() == 'linux' then
+        defines 'LUA_USE_LINUX'
+        links { 'm', 'dl', 'readline'}
+        end             
+        files
+        {
+            'dep/lua/src/lua.c',
+        }
+        links 'lua5.3'
+
+
+    project 'lua5.3'
+        language 'C'
+        kind 'SharedLib'
+        if os.get() == 'linux' then
+        defines 'LUA_USE_LINUX'
+        links { 'm', 'dl', 'readline'}
+        else
+        defines 'LUA_BUILD_AS_DLL'
+        end
+        files
+        {
+            'dep/lua/src/*.h',
+            'dep/lua/src/*.c',
+        }
+        excludes
+        {
+            'dep/lua/src/lua.c',
+            'dep/lua/src/luac.c',
+        }
+        
