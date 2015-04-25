@@ -5,7 +5,7 @@ lua-mysql is a simple(but not complete) Lua 5.3 binding of [MySQL 5.5 C API](htt
 
 ## Installation
 
-First obtain [premake4](http://industriousone.com/premake/download), and a C99 compiler and `libclientmysql` library is needed.
+First obtain [premake4](http://industriousone.com/premake/download), then a C99 compiler and `libmysqlclient` library is needed.
 
 ### Build on Windows 7 x64
 
