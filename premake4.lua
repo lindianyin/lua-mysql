@@ -36,11 +36,47 @@ solution 'lua-mysql'
             'dl',
         }
         
+	project 'lua'
+		language 'C'
+		kind 'ConsoleApp'
+		location 'build'
+		files
+		{
+			'dep/lua/src/lua.c',
+		}
+		includedirs
+		{
+			'dep/lua/src',
+		}
+		libdirs 'bin'
+		links 'lua5.3'
+		
+	project 'lua5.3'
+		language 'C'
+		kind 'SharedLib'
+		location 'build'
+        if os.get() == 'windows' then
+        defines 'LUA_BUILD_AS_DLL'
+        end   		
+		files
+		{
+			'dep/lua/src/*.h',
+			'dep/lua/src/*.c',
+		}
+		excludes
+		{
+			'dep/lua/src/lua.c',
+			'dep/lua/src/luac.c',
+		}
+		includedirs
+		{
+			'dep/lua/src',
+		}		
+		
     project 'luamysql'
         language 'C'
         kind 'SharedLib'
         location 'build'
-        uuid 'A75AF625-DDF0-4E60-97D8-A2FDC6229AF7'
         if os.get() == 'windows' then
         defines 'inline=__inline'
         end        
@@ -54,7 +90,7 @@ solution 'lua-mysql'
             'dep/libmysql',
             'dep/lua/src',
         }
-        
+        libdirs 'bin'
         links 'lua5.3'
         if os.get() == 'windows' then
         links 'libmysql'
