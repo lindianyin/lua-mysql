@@ -2,6 +2,10 @@
 // Distributed under the terms and conditions of the Apache License.
 // See accompanying files LICENSE.
 
+#ifdef _WIN32
+#include <WinSock2.h>
+#endif
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -559,7 +563,7 @@ static void make_meta(lua_State* L)
     create_meta(L, LUAMYSQL_CURSOR, cursor_methods);
 }
 
-LUALIB_API int luaopen_mysql(lua_State* L)
+LUALIB_API int luaopen_luamysql(lua_State* L)
 {
     static const luaL_Reg lib[] =
     {
