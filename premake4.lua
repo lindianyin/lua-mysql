@@ -27,6 +27,8 @@ solution 'lua-mysql'
             '_CRT_SECURE_NO_WARNINGS',
             '_SCL_SECURE_NO_WARNINGS',
             'NOMINMAX',
+			'LUA_BUILD_AS_DLL',
+			'inline=__inline',
         }
     configuration 'gmake'
         buildoptions '-std=c99'
@@ -54,10 +56,7 @@ solution 'lua-mysql'
 	project 'lua5.3'
 		language 'C'
 		kind 'SharedLib'
-		location 'build'
-        if os.get() == 'windows' then
-        defines 'LUA_BUILD_AS_DLL'
-        end   		
+		location 'build' 		
 		files
 		{
 			'dep/lua/src/*.h',
@@ -77,9 +76,7 @@ solution 'lua-mysql'
         language 'C'
         kind 'SharedLib'
         location 'build'
-        if os.get() == 'windows' then
-        defines 'inline=__inline'
-        end        
+		defines 'LUA_LIB'
         files
         {
             'src/*.h',
