@@ -9,14 +9,14 @@ First obtain [premake4](http://industriousone.com/premake/download), then a C99 
 
 ### Build on Windows 7 x64
 
-1. Type `premake4 vs2013` on command window to generate MSVC solution files.
+1. Type `premake5 vs2013` on command window to generate MSVC solution files.
 2. Use Visual Studio 2013(either Ultimate or Community version) to compile executable binary.
 3. Pre-compiled Windows x86/64 libmysql binary can be obtained [here](https://github.com/ichenq/usr)
 
 ### Build on Ubuntu 14.04 64-bit
 
 1. Type `sudo apt-get install libmysqlclient-dev`
-2. Type `premake4 gmake && make config=release64`
+2. Type `premake5 gmake && make config=release_x64`
 
 
 ## Usage at a glance
