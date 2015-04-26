@@ -37,7 +37,7 @@ solution 'lua-mysql'
             'm',
             'dl',
         }
-        
+    if os.get() == 'windows' then    
 	project 'lua'
 		language 'C'
 		kind 'ConsoleApp'
@@ -71,7 +71,8 @@ solution 'lua-mysql'
 		{
 			'dep/lua/src',
 		}		
-		
+	end
+	
     project 'luamysql'
         language 'C'
         kind 'SharedLib'
