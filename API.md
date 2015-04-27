@@ -1,6 +1,6 @@
 ## MySQL API
 
-### mysql.newclient()
+### mysql.new_client()
 
 Create and initializes a MYSQL connection client.
 
@@ -40,15 +40,17 @@ See [Connection Character Sets](http://dev.mysql.com/doc/refman/5.5/en/charset-c
 
 Enable or disable automatic reconnection to the server if the connection is found to have been lost.
 
-### conn:set_timeout(how, timeout)
+### conn:set_connect_timeout(timeout)
 
-`how` can be one of following:
+Set connect timeout in seconds
 
-how       |  description
-----------|------------------
-connect   | Connect timeout in seconds
-read      | The timeout in seconds for each attempt to read from the server
-write     | The timeout in seconds for each attempt to write to the server.
+### conn:set_write_timeout(timeout)
+
+The timeout in seconds for each attempt to read from the server
+
+### conn:set_read_timeout(timeout)
+
+The timeout in seconds for each attempt to write to the server.
 
 ### conn:set_protocol(protocol)
 

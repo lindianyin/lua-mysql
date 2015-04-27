@@ -1,5 +1,5 @@
 --
--- Premake4 build script (http://industriousone.com/premake/download)
+-- Premake script (http://premake.github.io)
 --
 
 assert(os.get() == 'windows' or os.get() == 'linux')
@@ -27,6 +27,8 @@ solution 'lua-mysql'
             '_CRT_SECURE_NO_WARNINGS',
             '_SCL_SECURE_NO_WARNINGS',
             'NOMINMAX',
+			'LUA_BUILD_AS_DLL',
+			'inline=__inline',
         }
     configuration 'gmake'
         buildoptions '-std=c99'
@@ -35,15 +37,47 @@ solution 'lua-mysql'
             'm',
             'dl',
         }
-        
+    if os.get() == 'windows' then    
+	project 'lua'
+		language 'C'
+		kind 'ConsoleApp'
+		location 'build'
+		files
+		{
+			'dep/lua/src/lua.c',
+		}
+		includedirs
+		{
+			'dep/lua/src',
+		}
+		libdirs 'bin'
+		links 'lua5.3'
+		
+	project 'lua5.3'
+		language 'C'
+		kind 'SharedLib'
+		location 'build' 		
+		files
+		{
+			'dep/lua/src/*.h',
+			'dep/lua/src/*.c',
+		}
+		excludes
+		{
+			'dep/lua/src/lua.c',
+			'dep/lua/src/luac.c',
+		}
+		includedirs
+		{
+			'dep/lua/src',
+		}		
+	end
+	
     project 'luamysql'
         language 'C'
         kind 'SharedLib'
         location 'build'
-        uuid 'A75AF625-DDF0-4E60-97D8-A2FDC6229AF7'
-        if os.get() == 'windows' then
-        defines 'inline=__inline'
-        end        
+		defines 'LUA_LIB'
         files
         {
             'src/*.h',

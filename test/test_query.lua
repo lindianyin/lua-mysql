@@ -12,7 +12,7 @@ local stmt = [[select * from country where continent='asia' limit 2]]
 
 local function query_use_result()
     print('query_use_result:')
-    local client = mysql.newclient()
+    local client = mysql.new_client()
     client:connect(conf)
     local cur = client:execute(stmt, 'use')
     local result = {}
@@ -29,7 +29,7 @@ end
 
 local function query_use_result_alpha_index()
     print('query_use_result_alpha_index:')
-    local client = mysql.newclient()
+    local client = mysql.new_client()
     client:connect(conf)
     local cur = client:execute(stmt, 'use')
     while true do
@@ -45,7 +45,7 @@ end
 
 local function query_store_result()
     print('query_store_result:')
-    local client = mysql.newclient()
+    local client = mysql.new_client()
     client:connect(conf)
     local cur = client:execute(stmt)
     local result = cur:fetch_all()
@@ -60,7 +60,7 @@ end
 
 local function query_store_result_alpha_index()
     print('query_store_result_alpha_index:')
-    local client = mysql.newclient()
+    local client = mysql.new_client()
     client:connect(conf)
     local cur = client:execute(stmt)
     local num_rows = cur:numrows()
